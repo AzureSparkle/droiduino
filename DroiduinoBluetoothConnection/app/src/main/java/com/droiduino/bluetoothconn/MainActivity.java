@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import java.io.IOException;
@@ -50,11 +51,19 @@ public class MainActivity extends AppCompatActivity {
         final Toolbar toolbar = findViewById(R.id.toolbar);
         final ProgressBar progressBar = findViewById(R.id.progressBar);
         progressBar.setVisibility(View.GONE);
-        final TextView textViewInfo = findViewById(R.id.textViewInfo);
-        final Button buttonToggle = findViewById(R.id.buttonToggle);
-        buttonToggle.setEnabled(false);
-        final ImageView imageView = findViewById(R.id.imageView);
-        imageView.setBackgroundColor(getResources().getColor(R.color.colorOff));
+        //final TextView textViewInfo = findViewById(R.id.textViewInfo);
+        //final Button buttonToggle = findViewById(R.id.buttonToggle);
+        //buttonToggle.setEnabled(false);
+        //final ImageView imageView = findViewById(R.id.imageView);
+        //imageView.setBackgroundColor(getResources().getColor(R.color.colorOff));
+
+        //Added 31/01/21, these buttons are custom, and will be used to control eTami
+        final Button disarmButton = findViewById(R.id.disarmButton);
+        final Button calibrationButton = findViewById(R.id.calibrateButton);
+        final Button reviewButton = findViewById(R.id.reviewButton);
+        final Button settingsButton = findViewById(R.id.settingsButton);
+
+        final TextView textView2 = findViewById(R.id.textView2);
 
         // If a bluetooth device has been selected from SelectDeviceActivity
         deviceName = getIntent().getStringExtra("deviceName");
@@ -79,6 +88,8 @@ public class MainActivity extends AppCompatActivity {
         /*
         Second most important piece of Code. GUI Handler
          */
+
+
         handler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg){
@@ -89,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
                                 toolbar.setSubtitle("Connected to " + deviceName);
                                 progressBar.setVisibility(View.GONE);
                                 buttonConnect.setEnabled(true);
-                                buttonToggle.setEnabled(true);
+                                //buttonToggle.setEnabled(true);
                                 break;
                             case -1:
                                 toolbar.setSubtitle("Device fails to connect");
@@ -101,20 +112,16 @@ public class MainActivity extends AppCompatActivity {
 
                     case MESSAGE_READ:
                         String arduinoMsg = msg.obj.toString(); // Read message from Arduino
-                        switch (arduinoMsg.toLowerCase()){
-                            case "led is turned on":
-                                imageView.setBackgroundColor(getResources().getColor(R.color.colorOn));
-                                textViewInfo.setText("Arduino Message : " + arduinoMsg);
-                                break;
-                            case "led is turned off":
-                                imageView.setBackgroundColor(getResources().getColor(R.color.colorOff));
-                                textViewInfo.setText("Arduino Message : " + arduinoMsg);
-                                break;
-                        }
+
+                        //The below is an attempt to learn how to handle incoming SerialBT data
+                        //It worked!
+                        textView2.setText(arduinoMsg);
+                        if(arduinoMsg == "dataTransmission")
                         break;
                 }
             }
         };
+
 
         // Select Bluetooth Device
         buttonConnect.setOnClickListener(new View.OnClickListener() {
@@ -126,6 +133,43 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        disarmButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                String cmdText = null;
+                cmdText = "<Gravity>";
+                connectedThread.write(cmdText);
+            }
+        });
+
+        calibrationButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                String cmdText = null;
+                cmdText = "<Calibration>";
+                connectedThread.write(cmdText);
+            }
+        });
+
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String cmdText = null;
+                cmdText = "<Trial>";
+                connectedThread.write(cmdText);
+            }
+        });
+
+        reviewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view){
+                String cmdText = null;
+                cmdText = "<Gravity>";
+                connectedThread.write(cmdText);
+            }
+        });
+
+        /*
         // Button to ON/OFF LED on Arduino Board
         buttonToggle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,6 +192,8 @@ public class MainActivity extends AppCompatActivity {
                 connectedThread.write(cmdText);
             }
         });
+        */
+
     }
 
     /* ============================ Thread to Create Bluetooth Connection =================================== */
