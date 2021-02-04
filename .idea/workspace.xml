@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ed170189-8586-4cf1-a244-9627e44fb2a7" name="Default Changelist" comment="" />
+    <list default="true" id="ed170189-8586-4cf1-a244-9627e44fb2a7" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -18,7 +20,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/DroiduinoBluetoothConnection" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="AndroidSdkUpdater" />
   </component>
   <component name="SvnConfiguration">
@@ -35,9 +37,9 @@
     <servers />
   </component>
   <component name="WindowStateProjectService">
-    <state x="740" y="252" key="FileChooserDialogImpl" timestamp="1612101296581">
+    <state x="740" y="252" key="FileChooserDialogImpl" timestamp="1612383507152">
       <screen x="0" y="0" width="1920" height="998" />
     </state>
-    <state x="740" y="252" key="FileChooserDialogImpl/0.0.1920.998/1920.0.1920.998@0.0.1920.998" timestamp="1612101296581" />
+    <state x="740" y="252" key="FileChooserDialogImpl/0.0.1920.998/1920.0.1920.998@0.0.1920.998" timestamp="1612383507152" />
   </component>
 </project>

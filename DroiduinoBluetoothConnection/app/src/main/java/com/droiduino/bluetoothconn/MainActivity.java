@@ -4,6 +4,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -20,7 +21,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,7 +63,9 @@ public class MainActivity extends AppCompatActivity {
         final Button reviewButton = findViewById(R.id.reviewButton);
         final Button settingsButton = findViewById(R.id.settingsButton);
 
-        final TextView textView2 = findViewById(R.id.textView2);
+        final TextView textView2 = findViewById(R.id.textView2);        //debug only
+
+        textView2.setText();
 
         // If a bluetooth device has been selected from SelectDeviceActivity
         deviceName = getIntent().getStringExtra("deviceName");
@@ -115,13 +117,17 @@ public class MainActivity extends AppCompatActivity {
 
                         //The below is an attempt to learn how to handle incoming SerialBT data
                         //It worked!
-                        textView2.setText(arduinoMsg);
-                        if(arduinoMsg == "dataTransmission")
+                        //textView2.setText(arduinoMsg);
+
                         break;
                 }
             }
         };
 
+        //this function handles all data transmission and confirmation
+        public boolean dataTransmission(){
+
+        }
 
         // Select Bluetooth Device
         buttonConnect.setOnClickListener(new View.OnClickListener() {
@@ -168,32 +174,6 @@ public class MainActivity extends AppCompatActivity {
                 connectedThread.write(cmdText);
             }
         });
-
-        /*
-        // Button to ON/OFF LED on Arduino Board
-        buttonToggle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String cmdText = null;
-                String btnState = buttonToggle.getText().toString().toLowerCase();
-                switch (btnState){
-                    case "turn on":
-                        buttonToggle.setText("Turn Off");
-                        // Command to turn on LED on Arduino. Must match with the command in Arduino code
-                        cmdText = "<turn on>";
-                        break;
-                    case "turn off":
-                        buttonToggle.setText("Turn On");
-                        // Command to turn off LED on Arduino. Must match with the command in Arduino code
-                        cmdText = "<turn off>";
-                        break;
-                }
-                // Send command to Arduino board
-                connectedThread.write(cmdText);
-            }
-        });
-        */
-
     }
 
     /* ============================ Thread to Create Bluetooth Connection =================================== */
@@ -340,4 +320,6 @@ public class MainActivity extends AppCompatActivity {
         a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(a);
     }
+
+
 }
