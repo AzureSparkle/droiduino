@@ -10,6 +10,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -30,6 +31,11 @@ import java.util.UUID;
 import static android.content.ContentValues.TAG;
 
 public class MainActivity extends AppCompatActivity {
+
+    private Button toSettings;
+    public Object data;
+    public String data2;
+    public Message message;
 
     private String deviceName = null;
     private String deviceAddress;
@@ -62,17 +68,19 @@ public class MainActivity extends AppCompatActivity {
         final Button calibrationButton = findViewById(R.id.calibrateButton);
         final Button reviewButton = findViewById(R.id.reviewButton);
         final Button settingsButton = findViewById(R.id.settingsButton);
+        //final Button toSettings = findViewById(R.id.toSettings);
 
         final TextView textView2 = findViewById(R.id.textView2);        //debug only
+        //final TextView textView3 = findViewById(R.id.textView3);
 
-        textView2.setText();
+        //textView2.setText();
 
         // If a bluetooth device has been selected from SelectDeviceActivity
         deviceName = getIntent().getStringExtra("deviceName");
         if (deviceName != null){
             // Get the device address to make BT Connection
             deviceAddress = getIntent().getStringExtra("deviceAddress");
-            // Show progree and connection status
+            // Show progress and connection status
             toolbar.setSubtitle("Connecting to " + deviceName + "...");
             progressBar.setVisibility(View.VISIBLE);
             buttonConnect.setEnabled(false);
@@ -90,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
         /*
         Second most important piece of Code. GUI Handler
          */
-
 
         handler = new Handler(Looper.getMainLooper()) {
             @Override
@@ -113,21 +120,17 @@ public class MainActivity extends AppCompatActivity {
                         break;
 
                     case MESSAGE_READ:
-                        String arduinoMsg = msg.obj.toString(); // Read message from Arduino
+                        data = msg.obj; // Read message from Arduino
 
                         //The below is an attempt to learn how to handle incoming SerialBT data
                         //It worked!
                         //textView2.setText(arduinoMsg);
-
                         break;
                 }
             }
         };
 
-        //this function handles all data transmission and confirmation
-        public boolean dataTransmission(){
 
-        }
 
         // Select Bluetooth Device
         buttonConnect.setOnClickListener(new View.OnClickListener() {
@@ -172,9 +175,25 @@ public class MainActivity extends AppCompatActivity {
                 String cmdText = null;
                 cmdText = "<Gravity>";
                 connectedThread.write(cmdText);
+
+                //String arduinoMsg = String.valueOf(handler.obtainMessage(MESSAGE_READ, data));
+                //textView2.setText(arduinoMsg);
+                Message message = handler.obtainMessage(MESSAGE_READ, data.toString() );
+                String message1 = message.obj.toString();
+                textView2.setText(message1);
+                //The above 3 lines causes an error that closes the BT connection
+
             }
         });
     }
+
+    private void dataTransmissionLoop() {
+        connectedThread.run();
+        String arduinoMsg = String.valueOf(handler.obtainMessage(MESSAGE_READ, data));
+        handler.hasMessages(MESSAGE_READ, data);
+        //Toast.makeText(this, data, Toast.LENGTH_SHORT);
+    }
+
 
     /* ============================ Thread to Create Bluetooth Connection =================================== */
     public static class CreateConnectThread extends Thread {
