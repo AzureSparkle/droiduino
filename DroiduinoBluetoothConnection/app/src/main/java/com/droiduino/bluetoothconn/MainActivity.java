@@ -1,16 +1,12 @@
 package com.droiduino.bluetoothconn;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -18,10 +14,8 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
     public String data2;
     public Message message;
 
+    public Object dataToSend;
+    public Object receivedData;
+
     private String deviceName = null;
     private String deviceAddress;
     public static Handler handler;
@@ -44,8 +41,12 @@ public class MainActivity extends AppCompatActivity {
     public static ConnectedThread connectedThread;
     public static CreateConnectThread createConnectThread;
 
-    private final static int CONNECTING_STATUS = 1; // used in bluetooth handler to identify message status
-    private final static int MESSAGE_READ = 2; // used in bluetooth handler to identify message update
+    private final static byte  CONNECTING_STATUS = 1; // used in bluetooth handler to identify message status
+    private final static byte  MESSAGE_READ = 2; // used in bluetooth handler to identify message update
+
+    private final static byte DATA_TRANSFER = 3;
+    private final static byte DATA_RECEIVED = 4;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,10 +96,7 @@ public class MainActivity extends AppCompatActivity {
             createConnectThread.start();
         }
 
-        /*
-        Second most important piece of Code. GUI Handler
-         */
-
+        //Second most important piece of Code. GUI Handler
         handler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg){
@@ -120,17 +118,28 @@ public class MainActivity extends AppCompatActivity {
                         break;
 
                     case MESSAGE_READ:
-                        data = msg.obj; // Read message from Arduino
-
+                        String data = msg.obj.toString(); // Read message from Arduino
                         //The below is an attempt to learn how to handle incoming SerialBT data
                         //It worked!
-                        //textView2.setText(arduinoMsg);
+                        if (data.contains("Terminate")){
+                            //Terminate
+                        }
+
+                        if (data.contains("DT:")){
+                            textView2.setText("Gravity: " + data);
+                        }
                         break;
+
+                    case DATA_TRANSFER:
+                        dataToSend = msg.obj;
+
+                        break;
+
+                    case DATA_RECEIVED:
+                        receivedData = msg.obj;
                 }
             }
         };
-
-
 
         // Select Bluetooth Device
         buttonConnect.setOnClickListener(new View.OnClickListener() {
@@ -178,22 +187,30 @@ public class MainActivity extends AppCompatActivity {
 
                 //String arduinoMsg = String.valueOf(handler.obtainMessage(MESSAGE_READ, data));
                 //textView2.setText(arduinoMsg);
+                /*
                 Message message = handler.obtainMessage(MESSAGE_READ, data.toString() );
                 String message1 = message.obj.toString();
                 textView2.setText(message1);
+                */
                 //The above 3 lines causes an error that closes the BT connection
+
+                //textView2.setText(data.toString());
+                //the above line causes a total crash to desktop
+
+                /*
+                String message4 = handler.obtainMessage(MESSAGE_READ, message.obj).toString();
+                textView2.setText(message4);
+                */
+                //The above two lines cause a crash which closes the socket
+
+                //Message message5 = handler.obtainMessage(MESSAGE_READ, message.getData());
+                //String data2 = (String) message5.obj;
+                //textView2.setText(data2);
+                //The above three lines cause a crash which closes the socket
 
             }
         });
     }
-
-    private void dataTransmissionLoop() {
-        connectedThread.run();
-        String arduinoMsg = String.valueOf(handler.obtainMessage(MESSAGE_READ, data));
-        handler.hasMessages(MESSAGE_READ, data);
-        //Toast.makeText(this, data, Toast.LENGTH_SHORT);
-    }
-
 
     /* ============================ Thread to Create Bluetooth Connection =================================== */
     public static class CreateConnectThread extends Thread {
@@ -339,6 +356,4 @@ public class MainActivity extends AppCompatActivity {
         a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(a);
     }
-
-
 }
